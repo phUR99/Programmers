@@ -7,7 +7,7 @@ using namespace std;
 
 int match(const string &u, const string &b, int ui, int bi)
 { 
-    if (bi == b.size() && ui == u.size()) return 1;
+    if (bi == b.size() || ui == u.size()) return (bi == b.size() && ui == u.size());
     int ret = 0;
     if (b[bi] == '*')
     {        
