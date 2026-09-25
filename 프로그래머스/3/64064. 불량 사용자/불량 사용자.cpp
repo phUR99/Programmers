@@ -21,7 +21,6 @@ int match(const string &u, const string &b, int ui, int bi)
     return ret;
 }
 int n;
-int visited[10];
 set<int> res;
 vector<vector<int>> arr;
 void dfs(int idx, int state)
@@ -43,7 +42,6 @@ int solution(vector<string> user_id, vector<string> banned_id) {
     n = banned_id.size();
     arr.resize(n);
     
-    memset(visited, -1, sizeof(visited));
     for (int i = 0; i < banned_id.size(); i++)
     {
         for (int j = 0; j < user_id.size(); j++)
