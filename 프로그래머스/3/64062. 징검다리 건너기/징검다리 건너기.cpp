@@ -12,7 +12,7 @@ int match(int x)
 {
     int pos = -1;
 
-    while (1)
+    while (pos < (int)arr.size())
     {        
         bool changed = false;
         // cout << pos << ' ';
