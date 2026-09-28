@@ -3,63 +3,60 @@
 #include <algorithm>
 #include <iostream>
 #include <map>
+#include <string.h>
 using namespace std;
 // y descend, x a ascend
 
-vector<vector<int>> arr;
+
 map<int, int> mp;
-vector<vector<int>> ans;
+int l[100005];
+int r[100005];
 
-void dfs(int i, int l, int r)
+void insert(int root, int node)
 {
-
-    if(l > r) return;
-    int ml = -1, mr = -1;
-    int nl = 0, nr = 0;
-    for (int p = l; p < i; p++) 
+    if (root < node)
     {
-        if (ml < arr[p][1])
-        {
-            ml = arr[p][1];
-            nl = p;
-        }
+        if(r[root] == -1) r[root] = node;
+        else insert(r[root], node);
     }
-    for (int p = i + 1; p <= r; p++) 
+    else
     {
-        if (mr < arr[p][1])
-        {
-            mr = arr[p][1];
-            nr = p;
-        }
+        if(l[root] == -1) l[root] = node;
+        else insert(l[root], node);
     }
-    // cout << mp[arr[i][0]] << ' ';
-    ans[0].push_back(mp[arr[i][0]]);
-    dfs(nl, l, i -1);
-    dfs(nr, i +1, r);    
-    ans[1].push_back(mp[arr[i][0]]);
-}
     
+}
+vector<vector<int>> arr;
+bool cmp(vector<int> &a, vector<int>&b)
+{
+    if (a[1] == b[1]) return a[0] < b[0];
+    return a[1] > b[1];
+}
+
+void dfs(int node, vector<vector<int>> &ans)
+{
+    ans[0].push_back(mp[node]);
+    if(l[node] != -1)dfs(l[node], ans);
+    if(r[node] != -1)dfs(r[node], ans);
+    ans[1].push_back(mp[node]);
+}
 
 
 vector<vector<int>> solution(vector<vector<int>> nodeinfo) {
-    vector<vector<int>> answer;
+    vector<vector<int>> answer;    
+    memset(l, -1, sizeof(l));
+    memset(r, -1, sizeof(r));    
+    for (int i = 0; i < nodeinfo.size(); i++) mp[nodeinfo[i][0]] = i + 1;    
     arr = nodeinfo;
-    sort(arr.begin(), arr.end());
-    ans.resize(2);
+    sort(arr.begin(), arr.end(), cmp);
+    int root = arr[0][0];
     
-    int st = 0;
-    int vl = -1;
-    for (int i = 0; i < arr.size(); i++)
+    for (int i = 1; i < arr.size(); i++)
     {
-        if (vl < arr[i][1])
-        {
-            st = i;
-            vl = arr[i][1];
-        }        
+        int node = arr[i][0];
+        insert(root, node);
     }
-    for (int i = 0; i <nodeinfo.size(); i++) mp[nodeinfo[i][0]] = i + 1;
-    
-    dfs(st, 0, arr.size()-1);
-    answer = ans;
+    answer.resize(2);
+    dfs(root, answer);
     return answer;
 }
