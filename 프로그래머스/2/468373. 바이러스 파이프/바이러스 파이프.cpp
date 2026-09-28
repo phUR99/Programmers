@@ -7,55 +7,60 @@ using namespace std;
 
 
 vector<pair<int, int>> adj[105];
-int M = 0;
-int kk;
-int nn;
+int visited[105];
 
-void dfs(int p, vector<int> visited)
-{    
-
-    int ret = 0;
-    for (int i = 1; i <= nn; i ++) ret += (visited[i]);
-    M = max(ret, M);
-    if(p == kk)
+int check(int m)
+{
+    int pre = -1 ;
+    while (m)
     {
-        return;
-    }    
-    for (int i = 1; i <= 3; i++)
-    {
-        vector<int> nv = visited;
-        queue<int> q;
-        for (int j = 1; j<= nn; j++)
-        {
-            if(visited[j]) q.push(j);
-        }
-        while (!q.empty())
-        {
-            int cur = q.front(); q.pop();
-            for (auto nxt : adj[cur])
-            {
-                int ne = nxt.first;
-                int nt = nxt.second;
-                if(nv[ne]) continue;
-                if(i != nt) continue;
-                nv[ne] = 1;
-                q.push(ne);
-            }            
-        }
-        dfs(p + 1, nv);
-    }        
+        int re = m % 3;
+        if(re == pre) return 0;
+        m /= 3;
+        pre = re;
+    }
+    return 1;
 }
+
 int solution(int n, int infection, vector<vector<int>> edges, int k) {
-    int answer = 0;
-    kk = k;
-    nn = n;    
+    int answer = 0;    
     for(auto e : edges) {
         adj[e[0]].push_back({e[1], e[2]});    
         adj[e[1]].push_back({e[0], e[2]});    
     }
-    vector<int> visit(n + 1, 0);
-    visit[infection] = 1;
-    dfs(0, visit);
-    answer = M;
+    
+    int M = 1;
+    for (int i = 0; i < k; i++) M *= 3;
+    for (int i = 0; i < M; i++)
+    {
+        int pre = -1;
+        if (!check(i)) continue;
+        memset(visited, -1, sizeof(visited));
+        int st = i;
+        int kk = k;
+        queue<int> q;        
+        visited[infection] = 1;
+        while(kk--)
+        {            
+            int state = st % 3;
+            st /= 3;
+            for (int j = 1; j <= n; j++) if(visited[j] == 1) q.push(j);
+            while(!q.empty())
+            {
+                int c = q.front(); q.pop();
+                for (auto nx : adj[c])
+                {
+                    if(visited[nx.first] == 1 || nx.second - 1 != state) continue;
+                    visited[nx.first] = 1;
+                    q.push(nx.first);
+                }
+                
+            }                        
+        }    
+        int ret = 0;
+        for (int j = 1; j <= n; j++) if(visited[j] == 1) ret++;
+        answer = max(ret, answer);
+    }
+    
     return answer;
 }
